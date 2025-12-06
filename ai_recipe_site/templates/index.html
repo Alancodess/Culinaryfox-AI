@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Culinaryfox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --card-bg: #ffffff;
+            --accent: #f97373;       /* primary accent */
+            --accent-2: #6366f1;     /* secondary accent */
+            --success: #16a34a;
+            --text-main: #1f2933;
+            --text-soft: #6b7280;
+            --border-soft: #e5e7eb;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --shadow-soft: 0 14px 35px rgba(15, 23, 42, 0.10);
+        }
+
+        /* Dark theme overrides */
+        body.dark {
+            --bg: #020617;
+            --card-bg: #020617;
+            --accent: #fb7185;
+            --accent-2: #4f46e5;
+            --success: #22c55e;
+            --text-main: #e5e7eb;
+            --text-soft: #9ca3af;
+            --border-soft: #1f2937;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            animation: fadeIn 0.35s ease-out;
+            line-height: 1.5;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 310px minmax(0, 1fr);
+            gap: 22px;
+            padding: 26px;
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 18px 18px 22px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            animation: slideInLeft 0.35s ease-out;
+            border: 1px solid var(--border-soft);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: var(--text-soft);
+        }
+
+        .side-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 12px 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #9ca3af;
+        }
+
+        body.dark .side-section-title {
+            color: #6b7280;
+        }
+
+        .ingredients-form textarea {
+            width: 100%;
+            min-height: 90px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-soft);
+            padding: 10px 11px;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease, background 0.15s ease;
+            background: rgba(255, 255, 255, 0.9);
+            color: #111827;
+        }
+
+        body.dark .ingredients-form textarea {
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .ingredients-form textarea:focus {
+            border-color: var(--accent-2);
+            box-shadow: 0 0 0 1px rgba(76, 111, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .hint {
+            font-size: 11px;
+            color: var(--text-soft);
+            margin-top: 6px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            flex: 1;
+            border-radius: 999px;
+            border: none;
+            padding: 9px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #f97316);
+            color: white;
+            box-shadow: 0 10px 22px rgba(248, 113, 113, 0.35);
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(248, 113, 113, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        .btn-secondary {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        body.dark .btn-secondary {
+            background: #111827;
+            color: #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            filter: brightness(1.03);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(129, 140, 248, 0.3);
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .chip {
+            font-size: 11px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: #f3f4ff;
+            color: #4b5563;
+            cursor: pointer;
+            transition: background 0.12s ease, transform 0.1s ease;
+        }
+
+        body.dark .chip {
+            background: #020617;
+            color: #d1d5db;
+            border: 1px solid #1f2937;
+        }
+
+        .chip:hover {
+            background: #e0e7ff;
+            transform: translateY(-1px);
+        }
+
+        body.dark .chip:hover {
+            background: #0b1120;
+        }
+
+        .side-footer {
+            margin-top: auto;
+            font-size: 11px;
+            color: #9ca3af;
+            border-top: 1px dashed #e5e7eb;
+            padding-top: 8px;
+            text-align: right;
+        }
+
+        body.dark .side-footer {
+            border-top-color: #1f2937;
+        }
+
+        /* Ingredient selection */
+        .ingredient-search-box {
+            margin-top: 10px;
+        }
+
+        .ingredient-search-input {
+            width: 100%;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            padding: 6px 10px;
+            font-size: 12px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #111827;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        body.dark .ingredient-search-input {
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .ingredient-search-input:focus {
+            border-color: var(--accent-2);
+            box-shadow: 0 0 0 1px rgba(76, 111, 255, 0.15);
+        }
+
+        .ingredient-sections {
+            margin-top: 8px;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .ingredient-section {
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            margin-bottom: 6px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.85);
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        body.dark .ingredient-section {
+            background: #020617;
+        }
+
+        .ingredient-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 9px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .ingredient-section-header-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ingredient-section-title-main {
+            font-weight: 600;
+        }
+
+        .ingredient-section-title-sub {
+            font-size: 11px;
+            color: var(--text-soft);
+        }
+
+        .ingredient-section-arrow {
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .ingredient-section.collapsed .ingredient-section-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .ingredient-section-body {
+            padding: 6px 8px 8px;
+            border-top: 1px solid var(--border-soft);
+            max-height: 260px;
+            overflow: hidden;
+            transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.2s ease;
+            opacity: 1;
+        }
+
+        .ingredient-section.collapsed .ingredient-section-body {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-top: none;
+        }
+
+        .ingredient-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .ingredient-pill {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-main);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.12s ease, transform 0.1s ease, box-shadow 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+        }
+
+        body.dark .ingredient-pill {
+            background: #020617;
+            color: #e5e7eb;
+            border-color: #1f2937;
+        }
+
+        .ingredient-pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+        }
+
+        .ingredient-pill.selected {
+            background: linear-gradient(135deg, var(--accent), #f97316);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 10px 22px rgba(248, 113, 113, 0.4);
+        }
+
+        .ingredient-pill.hidden-by-search {
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        /* MAIN */
+        .main {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            animation: slideInUp 0.35s ease-out;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .top-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .top-sub {
+            font-size: 13px;
+            color: var(--text-soft);
+            margin-top: 2px;
+        }
+
+        .pill {
+            border-radius: 999px;
+            padding: 6px 11px;
+            font-size: 12px;
+            background: #ecfdf5;
+            color: var(--success);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        body.dark .pill {
+            background: #022c22;
+            color: #bbf7d0;
+        }
+
+        /* THEME TOGGLE */
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-soft);
+            cursor: pointer;
+        }
+
+        .toggle-track {
+            width: 44px;
+            height: 22px;
+            border-radius: 999px;
+            background: #e5e7eb;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s ease;
+        }
+
+        .toggle-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 999px;
+            background: #ffffff;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.3);
+            transform: translateX(0);
+            transition: transform 0.2s ease;
+        }
+
+        body.dark .toggle-track {
+            background: #111827;
+        }
+
+        body.dark .toggle-thumb {
+            transform: translateX(20px);
+            background: #fbbf24;
+        }
+
+        /* HERO */
+        .hero {
+            background: radial-gradient(circle at 0 0, #fff9ea, #ffffff 40%);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            box-shadow: var(--shadow-soft);
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+            gap: 18px;
+            align-items: stretch;
+            overflow: hidden;
+            border: 1px solid var(--border-soft);
+        }
+
+        body.dark .hero {
+            background: radial-gradient(circle at 0 0, #111827, #020617 40%);
+        }
+
+        .hero-main-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .hero-desc {
+            font-size: 13px;
+            color: var(--text-soft);
+            margin-top: 6px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .pill-soft {
+            border-radius: 999px;
+            padding: 5px 9px;
+            background: #eef2ff;
+            color: #4338ca;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pill-soft.orange {
+            background: #fff4e6;
+            color: #ea580c;
+        }
+
+        body.dark .pill-soft {
+            background: #020617;
+            color: #a5b4fc;
+            border: 1px solid #1f2937;
+        }
+
+        body.dark .pill-soft.orange {
+            background: #451a03;
+            color: #fed7aa;
+        }
+
+        .hero-steps-preview {
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .hero-steps-preview li {
+            margin-left: 18px;
+            margin-bottom: 4px;
+        }
+
+        .hero-image-card {
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, #f97373, #fbbf24);
+            position: relative;
+            overflow: hidden;
+            padding: 16px;
+            color: white;
+            animation: floatCard 4s ease-in-out infinite;
+        }
+
+        body.dark .hero-image-card {
+            background: radial-gradient(circle at 20% 0%, #0f172a, #4f46e5);
+        }
+
+        .hero-tag {
+            font-size: 11px;
+            opacity: 0.85;
+            margin-bottom: 6px;
+        }
+
+        .hero-dish-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .hero-dish-caption {
+            font-size: 13px;
+            margin-top: 4px;
+            max-width: 220px;
+        }
+
+        .hero-badge {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            padding: 6px 11px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(14px);
+        }
+
+        .recipes-section {
+            margin-top: 4px;
+        }
+
+        .recipes-heading-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .recipes-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .recipes-count {
+            font-size: 12px;
+            color: var(--text-soft);
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .recipe-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 12px 14px 14px;
+            border: 1px solid #eef0ff;
+            animation: fadeUp 0.35s ease-out;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+            cursor: pointer;
+        }
+
+        body.dark .recipe-card {
+            border-color: #1f2937;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.16);
+            border-color: #e0e7ff;
+        }
+
+        body.dark .recipe-card:hover {
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8);
+            border-color: var(--accent-2);
+        }
+
+        .recipe-card.active {
+            border-color: var(--accent-2);
+            box-shadow: 0 18px 40px rgba(88, 80, 236, 0.28);
+            transform: translateY(-4px);
+        }
+
+        .recipe-card-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .recipe-info-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .recipe-thumb {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f97373, #fb923c);
+            flex-shrink: 0;
+        }
+
+        body.dark .recipe-thumb {
+            background: linear-gradient(135deg, #4f46e5, #22c55e);
+        }
+
+        .recipe-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .recipe-time-pill {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #ecfdf5;
+            color: var(--success);
+        }
+
+        body.dark .recipe-time-pill {
+            background: #022c22;
+            color: #bbf7d0;
+        }
+
+        .recipe-description {
+            font-size: 12px;
+            color: var(--text-soft);
+            margin-top: 4px;
+        }
+
+        .recipe-subtitle {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .recipe-subtitle:last-of-type {
+            color: var(--accent-2);
+        }
+
+        .ingredients-list,
+        .optional-list,
+        .steps-list {
+            margin-top: 3px;
+            font-size: 12px;
+        }
+
+        .ingredients-list li,
+        .optional-list li {
+            margin-left: 16px;
+            margin-bottom: 4px;
+        }
+
+        .steps-list li {
+            margin-left: 17px;
+            margin-bottom: 4px;
+        }
+
+        .empty-state {
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-soft);
+        }
+
+        .error-banner {
+            margin-top: 10px;
+            background: #fef2f2;
+            color: #b91c1c;
+            border-radius: var(--radius-md);
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .tiny-btn {
+            border-radius: 999px;
+            border: none;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            background: #eef2ff;
+            color: #4338ca;
+            transition: background 0.12s ease, transform 0.1s ease;
+        }
+
+        body.dark .tiny-btn {
+            background: #020617;
+            color: #e5e7eb;
+            border: 1px solid #1f2937;
+        }
+
+        .tiny-btn:hover {
+            background: #e0e7ff;
+            transform: translateY(-1px);
+        }
+
+        body.dark .tiny-btn:hover {
+            background: #0b1120;
+        }
+
+        /* Footer */
+        .main-footer {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #9ca3af;
+            text-align: right;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            background: rgba(15, 23, 42, 0.94);
+            color: #e5e7eb;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            z-index: 999;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.6);
+        }
+
+        body.dark #toast {
+            background: rgba(15, 23, 42, 0.98);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-12px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes floatCard {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0); }
+        }
+
+        @media (max-width: 960px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+                padding: 14px;
+            }
+            .sidebar {
+                order: 2;
+                padding: 14px;
+                box-shadow: 0 10px 24px rgba(15, 23, 42, 0.45);
+            }
+            .main {
+                order: 1;
+            }
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+            .hero-image-card {
+                min-height: 170px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-text">
+                <div class="brand-name">CULINARYFOX</div>
+                <div class="brand-sub">Smart recipes from your pantry</div>
+            </div>
+        </div>
+
+        <div class="side-section">
+            <div class="side-section-title">Your ingredients</div>
+            <form method="POST" class="ingredients-form">
+                <textarea
+                    name="ingredients"
+                    id="ingredients"
+                    placeholder="Speak casually or type: “I have 2 eggs, some chicken, rice and chilli powder…”"
+                >{{ ingredients }}</textarea>
+                <div class="hint">
+                    Type, tap, or talk. Everything you list helps build better recipes.
+                </div>
+                <div class="btn-row">
+                    <button type="submit" class="btn-primary" id="generate-btn">
+                        🔍 Generate
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="startListening()">
+                        🎙 Speak
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Ingredient search + categorized list -->
+        <div class="side-section">
+            <div class="side-section-title">Your pantry (quick select)</div>
+
+            <div class="ingredient-search-box">
+                <input
+                    type="text"
+                    id="ingredient-search"
+                    class="ingredient-search-input"
+                    placeholder="Search ingredients (e.g. chicken, rice, chilli)…"
+                />
+            </div>
+
+            <div class="ingredient-sections">
+                <!-- Proteins (open by default) -->
+                <div class="ingredient-section">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🍗</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Proteins</div>
+                                <div class="ingredient-section-title-sub">Meat & alternatives</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Beef Mince">Beef Mince</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Beef Steak">Beef Steak</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Chicken Thigh">Chicken Thigh</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Chicken Wings">Chicken Wings</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Pork Chops">Pork Chops</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Ham Slices">Ham Slices</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Bacon Strips">Bacon Strips</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sausages">Sausages</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Turkey Breast">Turkey Breast</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Lamb Chops">Lamb Chops</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Fish Fillet">Fish Fillet</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sardines">Sardines</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Crab Meat">Crab Meat</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Prawns">Prawns</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Mussels">Mussels</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Firm Tofu">Firm Tofu</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Silken Tofu">Silken Tofu</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Paneer">Paneer</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Tempeh">Tempeh</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dairy & Eggs (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🥚</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Dairy & Eggs</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Eggs">Eggs</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Milk">Milk</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Heavy Cream">Heavy Cream</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sour Cream">Sour Cream</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Yogurt">Yogurt</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Butter Salted">Butter Salted</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Butter Unsalted">Butter Unsalted</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Ghee">Ghee</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Parmesan">Parmesan</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cheddar">Cheddar</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Mozzarella">Mozzarella</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Feta">Feta</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Ricotta">Ricotta</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cream Cheese">Cream Cheese</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Ice Cream">Ice Cream</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vegetables (open) -->
+                <div class="ingredient-section">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🥔</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Vegetables</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Potatoes">Potatoes</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Tomatoes">Tomatoes</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Onions">Onions</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Garlic">Garlic</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Ginger">Ginger</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Carrots">Carrots</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cabbage">Cabbage</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cauliflower">Cauliflower</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Broccoli">Broccoli</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Lettuce">Lettuce</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Spinach">Spinach</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Kale">Kale</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cucumber">Cucumber</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Zucchini">Zucchini</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Pumpkin">Pumpkin</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Beetroot">Beetroot</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Mushrooms">Mushrooms</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Corn">Corn</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Peas">Peas</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Leeks">Leeks</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fruits (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🍎</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Fruits</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Bananas">Bananas</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Apples">Apples</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Oranges">Oranges</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Lemons">Lemons</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Limes">Limes</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Berries Mix">Berries Mix</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Grapes">Grapes</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Mango">Mango</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Pineapple">Pineapple</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Watermelon">Watermelon</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Dates">Dates</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Raisins">Raisins</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Pomegranate Seeds">Pomegranate Seeds</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grains, Pasta & Bread (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🍚</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Grains, Pasta & Bread</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Basmati Rice">Basmati Rice</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Jasmine Rice">Jasmine Rice</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Brown Rice">Brown Rice</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Oats">Oats</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Semolina">Semolina</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Couscous">Couscous</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Quinoa">Quinoa</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Macaroni">Macaroni</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Spaghetti">Spaghetti</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Noodles">Noodles</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Lasagna Sheets">Lasagna Sheets</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Bread Loaf">Bread Loaf</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Tortillas">Tortillas</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Bread Crumbs">Bread Crumbs</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Roti / Chapati">Roti / Chapati</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canned, Dried & Legumes (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🫘</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Canned, Dried & Legumes</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Chickpeas">Chickpeas</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Kidney Beans">Kidney Beans</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Black Beans">Black Beans</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Lentils Red">Lentils Red</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Lentils Brown">Lentils Brown</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Split Peas">Split Peas</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Baked Beans">Baked Beans</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Corn Kernel Can">Corn Kernel Can</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Tuna Can">Tuna Can</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Tomato Can">Tomato Can</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Coconut Milk Can">Coconut Milk Can</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spices & Seasonings (open) -->
+                <div class="ingredient-section">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🧂</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Spices & Seasonings</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Salt">Salt</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Pepper">Pepper</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Chili Powder">Chili Powder</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Paprika">Paprika</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cumin">Cumin</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Coriander Powder">Coriander Powder</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Turmeric">Turmeric</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cinnamon">Cinnamon</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Clove">Clove</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Oregano">Oregano</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Thyme">Thyme</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Rosemary">Rosemary</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Curry Powder">Curry Powder</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Garam Masala">Garam Masala</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Bay Leaf">Bay Leaf</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cardamom">Cardamom</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Star Anise">Star Anise</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Nutmeg">Nutmeg</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condiments, Sauces & Pastes (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🍯</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Condiments, Sauces & Pastes</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Ketchup">Ketchup</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Mustard">Mustard</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Soy Sauce">Soy Sauce</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Vinegar White">Vinegar White</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Vinegar Apple">Vinegar Apple</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Tomato Paste">Tomato Paste</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Mayonnaise">Mayonnaise</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Barbecue Sauce">Barbecue Sauce</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Hot Sauce">Hot Sauce</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Oyster Sauce">Oyster Sauce</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Fish Sauce">Fish Sauce</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Honey">Honey</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Maple Syrup">Maple Syrup</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Peanut Butter">Peanut Butter</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Tahini">Tahini</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Pesto">Pesto</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Baking & Dry Goods (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🥫</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Baking & Dry Goods</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Flour All-Purpose">Flour All-Purpose</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Wheat Flour">Wheat Flour</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Baking Powder">Baking Powder</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Baking Soda">Baking Soda</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Yeast">Yeast</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cornstarch">Cornstarch</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sugar White">Sugar White</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sugar Brown">Sugar Brown</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cocoa Powder">Cocoa Powder</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Chocolate Chips">Chocolate Chips</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Vanilla Extract">Vanilla Extract</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Herbs & Fresh Greens (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🌱</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Herbs & Fresh Greens</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Basil">Basil</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Parsley">Parsley</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cilantro">Cilantro</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Dill">Dill</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Mint">Mint</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Chives">Chives</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Green Onion">Green Onion</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Lemongrass">Lemongrass</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Bay Leaves Fresh">Bay Leaves Fresh</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sage">Sage</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nuts & Seeds (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🌰</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Nuts & Seeds</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Almonds">Almonds</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Cashews">Cashews</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Peanuts">Peanuts</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Walnuts">Walnuts</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Pistachios">Pistachios</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sunflower Seeds">Sunflower Seeds</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Pumpkin Seeds">Pumpkin Seeds</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Chia Seeds">Chia Seeds</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Flax Seeds">Flax Seeds</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Oils & Fats (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🧴</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Oils & Fats</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Olive Oil">Olive Oil</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sunflower Oil">Sunflower Oil</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Canola Oil">Canola Oil</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Coconut Oil">Coconut Oil</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Butter">Butter</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Margarine">Margarine</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sesame Oil">Sesame Oil</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beverages (collapsed) -->
+                <div class="ingredient-section collapsed">
+                    <div class="ingredient-section-header">
+                        <div class="ingredient-section-header-left">
+                            <span>🥤</span>
+                            <div>
+                                <div class="ingredient-section-title-main">Beverages</div>
+                            </div>
+                        </div>
+                        <div class="ingredient-section-arrow">▾</div>
+                    </div>
+                    <div class="ingredient-section-body">
+                        <div class="ingredient-grid">
+                            <button type="button" class="ingredient-pill" data-ingredient="Tea Bags">Tea Bags</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Coffee Powder">Coffee Powder</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Milkshakes">Milkshakes</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Fruit Juices">Fruit Juices</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Soft Drinks">Soft Drinks</button>
+                            <button type="button" class="ingredient-pill" data-ingredient="Sparkling Water">Sparkling Water</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hint" style="margin-top:6px;">
+                Tap pills to select what you have. You can mix tapping, talking and typing freely.
+            </div>
+        </div>
+
+        <div class="side-section">
+            <div class="side-section-title">Try these combos</div>
+            <div class="chips">
+                <div class="chip" onclick="fillFromExample('eggs, milk, bread')">eggs, milk, bread</div>
+                <div class="chip" onclick="fillFromExample('chicken thigh, rice, chili powder, yogurt')">chicken, rice, chilli</div>
+                <div class="chip" onclick="fillFromExample('pasta, tomato paste, garlic, cheese')">pasta, tomato, cheese</div>
+                <div class="chip" onclick="fillFromExample('paneer, spinach, onion, garam masala')">paneer, spinach, masala</div>
+            </div>
+        </div>
+
+        <div class="side-footer">
+            designed by <strong>alansync</strong>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <header class="top-bar">
+            <div>
+                <div class="top-title">Culinaryfox · smart recipes</div>
+                <div class="top-sub">
+                    Use your pantry list or just talk casually. You’ll get clear, beginner-friendly recipes.
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="pill">
+                    ✅ Live · AI recipe assistant
+                </div>
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-label">☀️</span>
+                    <div class="toggle-track">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        {% if error %}
+            <div class="error-banner">{{ error }}</div>
+        {% endif %}
+
+        <!-- HERO -->
+        <section class="hero">
+            <div>
+                {% if recipes and recipes|length > 0 %}
+                    {% set hero = recipes[0] %}
+                    <div class="hero-main-title">{{ hero.name }}</div>
+                    {% if hero.description %}
+                        <div class="hero-desc">{{ hero.description }}</div>
+                    {% endif %}
+                    <div class="hero-meta">
+                        <div class="pill-soft orange">⏱ {{ hero.time_minutes }} min</div>
+                        <div class="pill-soft">⭐ Based on your ingredients</div>
+                    </div>
+                    {% if hero.steps %}
+                        <div class="hero-steps-preview">
+                            <ul>
+                                {% for step in hero.steps[:3] %}
+                                    <li>{{ step }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="hero-main-title">Start with what’s in your kitchen</div>
+                    <div class="hero-desc">
+                        Select ingredients from the list, speak casually (“I’ve got chicken, rice and some spices”),
+                        or just type. You’ll get time, required items, optional upgrades and clear steps.
+                    </div>
+                    <div class="hero-meta">
+                        <div class="pill-soft orange">⏱ Usually under 30 seconds</div>
+                        <div class="pill-soft">🌶 Works for veg & non-veg</div>
+                    </div>
+                    <div class="hero-steps-preview">
+                        <ul>
+                            <li>Tap the ingredients you have, or type/speak them.</li>
+                            <li>Click <strong>Generate</strong> to see recipe ideas.</li>
+                            <li>Open a card, follow the steps, and cook.</li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="hero-image-card">
+                <div class="hero-tag">Today’s smart suggestion</div>
+                {% if recipes and recipes|length > 0 %}
+                    <div class="hero-dish-name">{{ hero.name }}</div>
+                    <div class="hero-dish-caption">
+                        {{ hero.description or "A custom dish built around your pantry." }}
+                    </div>
+                {% else %}
+                    <div class="hero-dish-name">Your next signature dish</div>
+                    <div class="hero-dish-caption">
+                        Turn random ingredients into a restaurant-style plate in minutes.
+                    </div>
+                {% endif %}
+                <div class="hero-badge">
+                    🍽 Guided steps · Prep ⏱
+                </div>
+            </div>
+        </section>
+
+        <!-- RECIPES LIST -->
+        <section class="recipes-section">
+            <div class="recipes-heading-row">
+                <div class="recipes-title">Suggested recipes</div>
+                {% if recipes %}
+                    <div class="recipes-count">{{ recipes|length }} dish(es) found</div>
+                {% else %}
+                    <div class="recipes-count">No recipes yet · try adding ingredients</div>
+                {% endif %}
+            </div>
+
+            {% if recipes %}
+                <div class="recipes-grid">
+                    {% for recipe in recipes %}
+                        <article class="recipe-card">
+                            <div class="recipe-card-header">
+                                <div class="recipe-info-box">
+                                    <div class="recipe-thumb"></div>
+                                    <div>
+                                        <div class="recipe-name">{{ recipe.name }}</div>
+                                        {% if recipe.description %}
+                                            <div class="recipe-description">
+                                                {{ recipe.description }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <div class="recipe-time-pill">
+                                        ⏱ {{ recipe.time_minutes }} min
+                                    </div>
+                                    <div class="pill-soft" style="font-size:11px;">
+                                        👨‍🍳 Easy
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="tiny-btn"
+                                        onclick="copyRecipe({{ loop.index0 }})"
+                                    >
+                                        📋 Copy
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="recipe-{{ loop.index0 }}">
+                                <div class="recipe-subtitle">Required ingredients</div>
+                                {% if recipe.required_ingredients %}
+                                    <ul class="ingredients-list">
+                                        {% for ing in recipe.required_ingredients %}
+                                            <li>{{ ing }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="ingredients-list"><em>Not specified</em></p>
+                                {% endif %}
+
+                                <div class="recipe-subtitle">Optional ingredients</div>
+                                {% if recipe.optional_ingredients %}
+                                    <ul class="optional-list">
+                                        {% for ing in recipe.optional_ingredients %}
+                                            <li>{{ ing }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="optional-list"><em>No extras suggested</em></p>
+                                {% endif %}
+
+                                <div class="recipe-subtitle">Steps</div>
+                                {% if recipe.steps %}
+                                    <ol class="steps-list">
+                                        {% for step in recipe.steps %}
+                                            <li>{{ step }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                {% else %}
+                                    <p class="steps-list"><em>No steps provided</em></p>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">
+                    No recipes yet. Start by entering or selecting ingredients in the panel on the left.
+                </p>
+            {% endif %}
+        </section>
+
+        <footer class="main-footer">
+            © alansync
+        </footer>
+    </main>
+</div>
+
+<!-- Toast -->
+<div id="toast">
+    <span>✅ Recipe copied to clipboard</span>
+</div>
+
+<script>
+    function fillFromExample(text) {
+        const textarea = document.getElementById("ingredients");
+        textarea.value = text;
+    }
+
+    let recognition;
+
+    function startListening() {
+        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            alert("Speech recognition is not supported in this browser.");
+            return;
+        }
+
+        const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!recognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = "en-US";
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                const textarea = document.getElementById("ingredients");
+                textarea.value = textarea.value
+                    ? textarea.value + ", " + transcript
+                    : transcript;
+            };
+
+            recognition.onerror = (e) => {
+                console.log("Speech recognition error:", e);
+            };
+        }
+
+        recognition.start();
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        if (!toast) return;
+        toast.querySelector("span").textContent = message;
+        toast.style.display = "flex";
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(6px)";
+        requestAnimationFrame(() => {
+            toast.style.transition = "opacity 0.15s ease, transform 0.15s ease";
+            toast.style.opacity = "1";
+            toast.style.transform = "translateY(0)";
+        });
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateY(6px)";
+            setTimeout(() => { toast.style.display = "none"; }, 180);
+        }, 1600);
+    }
+
+    function copyRecipe(index) {
+        const block = document.getElementById("recipe-" + index);
+        if (!block) return;
+        const text = block.innerText;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+                .writeText(text)
+                .then(() => showToast("Recipe copied to clipboard"))
+                .catch(() =>
+                    alert("Copy failed. Your browser might not allow clipboard access.")
+                );
+        } else {
+            alert("Clipboard API not supported in this browser.");
+        }
+    }
+
+    function applySavedTheme() {
+        const saved = localStorage.getItem("theme");
+        const label = document.getElementById("theme-label");
+        if (saved === "dark") {
+            document.body.classList.add("dark");
+            if (label) label.textContent = "🌙";
+        } else {
+            document.body.classList.remove("dark");
+            if (label) label.textContent = "☀️";
+        }
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle("dark");
+        const isDark = document.body.classList.contains("dark");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+        const label = document.getElementById("theme-label");
+        if (label) label.textContent = isDark ? "🌙" : "☀️";
+    }
+
+    // Ingredient pills -> sync with textarea
+    function setupIngredientSelection() {
+        const pills = document.querySelectorAll(".ingredient-pill");
+        const textarea = document.getElementById("ingredients");
+
+        if (!pills || !textarea) return;
+
+        function updateTextareaFromSelected() {
+            const selected = Array.from(document.querySelectorAll(".ingredient-pill.selected"))
+                .map(p => p.getAttribute("data-ingredient"));
+            const combined = selected.join(", ");
+            if (combined) {
+                textarea.value = combined;
+            }
+        }
+
+        pills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                pill.classList.toggle("selected");
+                updateTextareaFromSelected();
+            });
+        });
+    }
+
+    // Accordion open/close
+    function setupIngredientAccordion() {
+        const sections = document.querySelectorAll(".ingredient-section");
+        sections.forEach(section => {
+            const header = section.querySelector(".ingredient-section-header");
+            if (!header) return;
+            header.addEventListener("click", (e) => {
+                if (e.target.closest(".ingredient-pill")) return;
+                section.classList.toggle("collapsed");
+            });
+        });
+    }
+
+    // Search filter for pills
+    function setupIngredientSearch() {
+        const input = document.getElementById("ingredient-search");
+        const pills = document.querySelectorAll(".ingredient-pill");
+        if (!input || !pills.length) return;
+
+        input.addEventListener("input", () => {
+            const q = input.value.trim().toLowerCase();
+            pills.forEach(pill => {
+                const label = pill.getAttribute("data-ingredient").toLowerCase();
+                if (!q) {
+                    pill.classList.remove("hidden-by-search");
+                } else if (label.includes(q)) {
+                    pill.classList.remove("hidden-by-search");
+                } else {
+                    pill.classList.add("hidden-by-search");
+                }
+            });
+        });
+    }
+
+    // Loading state for Generate button
+    function setupGenerateButton() {
+        const form = document.querySelector(".ingredients-form");
+        const generateBtn = document.getElementById("generate-btn");
+        if (!form || !generateBtn) return;
+
+        form.addEventListener("submit", () => {
+            generateBtn.disabled = true;
+            generateBtn.textContent = "⏳ Generating...";
+        });
+    }
+
+    // Active recipe card highlighting
+    function setupActiveRecipeCards() {
+        const cards = document.querySelectorAll(".recipe-card");
+        if (!cards.length) return;
+        cards.forEach(card => {
+            card.addEventListener("click", () => {
+                cards.forEach(c => c.classList.remove("active"));
+                card.classList.add("active");
+            });
+        });
+        cards[0].classList.add("active");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        applySavedTheme();
+        setupIngredientSelection();
+        setupIngredientAccordion();
+        setupIngredientSearch();
+        setupGenerateButton();
+        setupActiveRecipeCards();
+    });
+</script>
+</body>
+</html>
